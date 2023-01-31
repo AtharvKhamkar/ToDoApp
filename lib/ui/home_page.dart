@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import 'package:todoapp/services/notification_service.dart';
 import 'package:todoapp/services/theme_services.dart';
+import 'package:todoapp/ui/theme.dart';
+import 'package:todoapp/ui/widget/button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,10 +31,36 @@ class _HomePageState extends State<HomePage> {
       appBar: _appBar(),
       body: Column(
         children: [
-          Text(
-            "Theme Data",
-            style: TextStyle(fontSize: 30),
-          )
+          _addTaskBar()
+        ],
+      ),
+    );
+  }
+
+  _addTaskBar() {
+    return Container(
+      margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat.yMMMMd().format(
+                    DateTime.now(),
+                  ),
+                  style: subHeadingStyle,
+                ),
+                Text(
+                  "Today",
+                  style: headingStyle,
+                ),
+              ],
+            ),
+          ),
+          MyButton(label: "+ Add Task", onTap: () => null)
         ],
       ),
     );
@@ -39,6 +68,8 @@ class _HomePageState extends State<HomePage> {
 
   _appBar() {
     return AppBar(
+      elevation: 0,
+      backgroundColor: context.theme.backgroundColor,
       leading: GestureDetector(
         onTap: () {
           ThemeService().switchTheme();
@@ -51,14 +82,14 @@ class _HomePageState extends State<HomePage> {
           notifyHelper.scheduledNotification();
         },
         child: Icon(
-          Icons.nightlight_round,
+          Get.isDarkMode ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+          color: Get.isDarkMode ? Colors.white : Colors.lightBlue[900],
           size: 20,
         ),
       ),
       actions: [
-        Icon(
-          Icons.person,
-          size: 20,
+        CircleAvatar(
+          backgroundImage: AssetImage("images/profile.png"),
         ),
         SizedBox(
           width: 20,
