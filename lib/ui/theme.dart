@@ -15,3 +15,4 @@ class Themes {
   static final dark =
       ThemeData(primaryColor: darkGreyClr, brightness: Brightness.dark);
 }
+ 
