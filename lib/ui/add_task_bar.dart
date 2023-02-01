@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:todoapp/controllers/task_controller.dart';
+import 'package:todoapp/models/task.dart';
 import 'package:todoapp/services/theme_services.dart';
 import 'package:todoapp/ui/theme.dart';
 import 'package:todoapp/ui/widget/button.dart';
@@ -14,6 +16,9 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _noteController = TextEditingController();
+  final TaskController _taskController = Get.put(TaskController());
   DateTime _selectedDate = DateTime.now();
   String _endTime = "9:30";
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
@@ -53,8 +58,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
               MyInputField(
                 title: "Title",
                 hint: "Hi guys how are you donig!!",
+                controller: _titleController,
               ),
-              MyInputField(title: "Note", hint: "Enter your note"),
+              MyInputField(
+                title: "Note",
+                hint: "Enter your note",
+                controller: _noteController,
+              ),
               MyInputField(
                 title: "Date",
                 hint: DateFormat.yMd().format(_selectedDate),
@@ -162,7 +172,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _colorPallete(),
-                  MyButton(label: "Create Task", onTap: () => null)
+                  MyButton(label: "Create Task", onTap: () => _validateData())
                 ],
               )
             ],
@@ -285,5 +295,33 @@ class _AddTaskPageState extends State<AddTaskPage> {
         ),
       ],
     );
+  }
+
+  _validateData() {
+    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
+      _addTaskToDb();
+      Get.back();
+    } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
+      Get.snackbar("Required", "All fields are required!",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.white,
+          colorText: pinkClr,
+          icon: Icon(Icons.warning_amber_rounded));
+    }
+  }
+
+  _addTaskToDb() async {
+    int value = await _taskController.addTask(
+        task: Task(
+            title: _titleController.text,
+            note: _noteController.text,
+            isCompleted: 0,
+            date: DateFormat.yMd().format(_selectedDate),
+            startTime: _startTime,
+            endTime: _endTime,
+            color: _selectedColor,
+            remind: _selectedRemind,
+            repeat: _selectedRepeat));
+    print("My is " + "$value");
   }
 }
